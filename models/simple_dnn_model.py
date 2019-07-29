@@ -7,7 +7,7 @@ class RecoDNN():
     def __init__(self, max_transaction_history = 50, max_product_click_history = 50, max_promotion_click_history = 50,
                  category_size = 100, single_categorical_features = None, numeric_features_size = 10,
                  hidden_layer1_size = 256, hidden_layer2_size = 128, hidden_layer3_size = 64, activation='relu',
-                input_embedding_size = 128):
+                input_embedding_size = 128, multi_gpu_model=False):
         
         self.max_transaction_history = max_transaction_history
         self.max_product_click_history = max_product_click_history
@@ -20,6 +20,7 @@ class RecoDNN():
         self.numeric_features_size = numeric_features_size
         self.activation = activation
         self.input_embedding_size = input_embedding_size
+        self.multi_gpu_model = multi_gpu_model
         
         self.category_embeddings = tf.keras.layers.Embedding(output_dim=self.input_embedding_size, input_dim = self.category_size, 
                        input_length = builtins.max(self.max_transaction_history, self.max_product_click_history, self.max_promotion_click_history), mask_zero=True, name='category_embeddings')
@@ -36,7 +37,16 @@ class RecoDNN():
         v = tf.keras.layers.Dense(self.hidden_layer2_size, activation = self.activation)(v)
         v = tf.keras.layers.Dense(self.hidden_layer3_size, activation = self.activation, name='user_embedding')(v)
         output = tf.keras.layers.Dense(self.category_size, activation ='softmax', name='softmax_layer')(v)
-        self.model = tf.keras.models.Model(inputs = inp_layer, outputs = [output])    
+        self.model = tf.keras.models.Model(inputs = inp_layer, outputs = [output])   
+
+        if self.multi_gpu_model:
+            try:
+                self.model = multi_gpu_model(self.model, gpus=2, cpu_relocation=True)
+                print("Training using multiple GPUs..")
+            except:
+                print("Training using single GPU or CPU..")
+        
+        self.model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
         
     
     def create_input(self):
@@ -71,12 +81,8 @@ class RecoDNN():
     
         seq = tf.keras.layers.Input(shape=(max_history,), dtype='int32', name=name)
         input_embeddings = self.category_embeddings(seq)
-        avg = tf.keras.layers.Lambda(lambda x: tf.reduce_mean(x, axis=1), name= name + '_avg_embedding')
-        #avg_embedding = tf.reduce_mean(input_embeddings, axis=0), name= name + '_avg_embedding'))
-        avg_embedding = avg(input_embeddings)
-
-        #maxf = Lambda(lambda x: max(x, axis=1), name = name + '_max_embedding')
-        #max_embedding = maxf(input_embeddings)
+        avg_embedding = tf.keras.layers.GlobalAveragePooling1D(name=name + '_avg_embedding')(input_embeddings, mask=self.category_embeddings.compute_mask(seq))
+        #max_embedding = tf.keras.layers.GlobalMaxPooling1D(name=name + '_max_embedding')(input_embeddings)
 
         return seq, avg_embedding   #keras.layers.add([avg_embedding, max_embedding])
 

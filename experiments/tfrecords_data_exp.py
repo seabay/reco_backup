@@ -26,11 +26,6 @@ if __name__ == '__main__':
     model = model.RecoDNN(configs.max_transaction_history, configs.max_product_click_history, configs.max_promotion_click_history, configs.category_size,
                     numeric_features_size = configs.numeric_size, input_embedding_size = configs.input_embedding_size,
                     single_categorical_features = single_category_cols).model
-
-    model.compile(loss='categorical_crossentropy',
-                        optimizer='adam',
-                        metrics=['accuracy'])
-
     model.summary()
 
     #model.fit(ds.make_one_shot_iterator(), epochs=configs.epochs, steps_per_epoch=int(10000//configs.batch_size))

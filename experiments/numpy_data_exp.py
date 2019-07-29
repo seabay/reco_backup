@@ -17,10 +17,6 @@ if __name__ == '__main__':
                     numeric_features_size = configs.numeric_size, input_embedding_size = configs.input_embedding_size,
                     single_categorical_features = single_category_cols).model
 
-    model.compile(loss='categorical_crossentropy',
-                        optimizer='adam',
-                        metrics=['accuracy'])
-
     model.summary()
 
     model.fit(x=features, y=tf.keras.utils.to_categorical(labels, num_classes=configs.category_size), epochs=configs.epochs, batch_size=configs.batch_size)
