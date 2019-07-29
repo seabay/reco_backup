@@ -17,7 +17,7 @@ class tfrecords_loader():
                     "106":tf.FixedLenFeature([1], tf.int64),
                     "107":tf.FixedLenFeature([1], tf.int64),
                     "numeric":tf.FixedLenFeature([10], tf.float32),
-                    "labels":tf.FixedLenFeature([configs.category_size], tf.float32),
+                    "labels":tf.FixedLenFeature([1], tf.float32),
             }
         parsed_features = tf.parse_single_example(example_proto, features)
         #return parsed_features

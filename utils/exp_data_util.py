@@ -15,6 +15,5 @@ def create_data(data_size=10000, max_transaction_history=50, max_product_click_h
     inputs.append(num1)
 
     labels = np.random.randint(category_size, size=(data_size, 1))
-    #one_hot_labels = tf.keras.utils.to_categorical(labels, num_classes=category_size)
 
     return inputs, labels

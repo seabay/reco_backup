@@ -14,12 +14,11 @@ single_category_cols = {105:3,106:5,107:10}   ## such as location : unique_value
 features, labels = exp_data_util.create_data()
 
 ## save as tfrecord file
-one_hot_labels=tf.keras.utils.to_categorical(labels, num_classes=configs.category_size)
-tfrecords_saver.save_as_tfrecords('../data/tf.tfrecord',features, one_hot_labels)
+tfrecords_saver.save_as_tfrecords('../data/tf.tfrecord',features, labels)
 
 ## load tfrecords file
 ds = tfrecords_loader.tfrecords_loader(['../data/tf.tfrecord']).load()
-iter = ds.make_one_shot_iterator()
+#iter = ds.make_one_shot_iterator()
 
 if __name__ == '__main__':
 
@@ -28,5 +27,5 @@ if __name__ == '__main__':
                     single_categorical_features = single_category_cols).model
     model.summary()
 
-    #model.fit(ds.make_one_shot_iterator(), epochs=configs.epochs, steps_per_epoch=int(10000//configs.batch_size))
-    model.fit(iter, epochs=configs.epochs, steps_per_epoch=int(10000//configs.batch_size))
+    #model.fit(iter, epochs=configs.epochs, steps_per_epoch=int(10000//configs.batch_size))
+    model.fit(ds, epochs=configs.epochs, steps_per_epoch=int(10000//configs.batch_size))

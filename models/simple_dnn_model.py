@@ -46,7 +46,7 @@ class RecoDNN():
             except:
                 print("Training using single GPU or CPU..")
         
-        self.model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+        self.model.compile(loss='sparse_categorical_crossentropy', optimizer='adam', metrics=['sparse_categorical_accuracy'])
         
     
     def create_input(self):
