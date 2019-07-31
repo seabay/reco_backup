@@ -14,10 +14,10 @@ single_category_cols = {105:3,106:5,107:10}   ## such as location : unique_value
 features, labels = exp_data_util.create_data()
 
 ## save as tfrecord file
-tfrecords_saver.save_as_tfrecords('../data/tf.tfrecord',features, labels)
+tfrecords_saver.save_as_tfrecords('../data/train-tf.tfrecord',features, labels)
 
 ## load tfrecords file
-ds = tfrecords_loader.tfrecords_loader(['../data/tf.tfrecord']).load()
+ds = tfrecords_loader.tfrecords_loader('../data', 'train').load()
 #iter = ds.make_one_shot_iterator()
 
 if __name__ == '__main__':

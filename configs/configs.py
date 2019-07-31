@@ -8,3 +8,4 @@ numeric_size = 10
 
 batch_size=32
 epochs=50
+num_parallel_calls=8
